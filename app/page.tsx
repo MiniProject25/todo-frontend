@@ -18,7 +18,7 @@ export default function Home() {
       </div> */}
 
       <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56 text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-6xl bg-clip-text text-transparent bg-linear-to-r from-white to-gray-500">
           Organize your chaos, <br />
           <span className="text-cyan-500">one task at a time.</span>
         </h1>

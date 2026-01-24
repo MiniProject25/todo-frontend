@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import ToastProvider from "./providers/ToastProvider";
 
 const inter = Inter({
   subsets: ["latin"]
@@ -23,6 +24,7 @@ export default function RootLayout({
         className={`${inter.className} bg-gray-950 text-gray-100 min-h-screen flex flex-col`}
       >
         <Navbar />
+        <ToastProvider />
         <main className="grow">
           {children}
         </main>
