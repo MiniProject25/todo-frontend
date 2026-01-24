@@ -1,6 +1,18 @@
+"use client"
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
+  const router = useRouter()
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (token) {
+      router.push("/main")
+    }
+  }, [])
+
   return (
     <div className="relative isolate px-6 pt-14 lg:px-8">
       {/* Background artistic effect */}
@@ -29,7 +41,7 @@ export default function Home() {
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6">
           <Link
-            href="/signup"
+            href="/auth"
             className="rounded-md bg-cyan-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-600 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           >
             Get started for free

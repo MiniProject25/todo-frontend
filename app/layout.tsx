@@ -9,7 +9,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "TaDa! TodoList",
+  title: "Taskflow",
   description: "The worst todo list of all time!",
 };
 
@@ -23,7 +23,6 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-gray-950 text-gray-100 min-h-screen flex flex-col`}
       >
-        <Navbar />
         <ToastProvider />
         <main className="grow">
           {children}

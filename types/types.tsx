@@ -3,3 +3,8 @@ export interface user {
     password: string
     username?: string
 }
+
+export interface todocat {
+    id: number,
+    category: string
+}

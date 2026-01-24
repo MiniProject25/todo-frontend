@@ -1,19 +1,28 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { user } from "@/types/types";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation"
 
 type AuthMode = "LOGIN" | "SIGNUP";
 
 export default function AuthPage() {
+    const router = useRouter()
     const [authMode, setAuthMode] = useState<AuthMode>("LOGIN");
     const [user, setUser] = useState<user>({
         email: "",
         username: "",
         password: ""
     });
+
+    useEffect(() => {
+        const token = localStorage.getItem("token")
+        if (token) {
+            router.push("/main")
+        }
+    }, [])
 
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -44,6 +53,7 @@ export default function AuthPage() {
                 if (response.ok) {
                     const data = await response.json();
                     localStorage.setItem("token", data.jwt)
+
                     setUser({
                         email: "",
                         username: "",
@@ -53,6 +63,8 @@ export default function AuthPage() {
                     toast.success("Success!", {
                         className: "bg-gray-800 text-white border border-gray-700",
                     });
+
+                    router.push("/main")
                 }
                 else {
                     toast.error("Error!", {
@@ -79,13 +91,12 @@ export default function AuthPage() {
                 });
 
                 if (response.ok) {
-                    const data = await response.json();
-
                     setUser({
                         username: "",
                         email: "",
                         password: ""
                     })
+                    setAuthMode("LOGIN")
 
                     toast.success("Success!", {
                         className: "bg-gray-800 text-white border border-gray-700",
