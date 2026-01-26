@@ -92,7 +92,7 @@ export default function DashboardLayout({
                     {categories.map((cat) => (
                         <Link
                             key={cat.id}
-                            href={`/main?category=${cat.category}`}
+                            href={`/main?catId=${cat.id}&title=${cat.category}`}
                             className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-all duration-200 group ${activeCategory === cat.category
                                 ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
                                 : "text-gray-400 hover:bg-gray-800 hover:text-white"
