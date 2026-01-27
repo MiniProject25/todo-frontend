@@ -16,10 +16,13 @@ export type Todo = {
     steps: string[];
     dueDate: string;
     category: string;
+    categoryId: number;
 };
 
 export interface TodoDetailSidebarProps {
     todo: Todo | null;
     onClose: () => void;
     onDelete: (id: number) => void;
+    onUpdate: (updatedTodo: Todo) => void;
+    onRemove: (id: number) => void;
 }

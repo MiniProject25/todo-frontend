@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { todocat } from "@/types/types";
 
@@ -14,7 +14,8 @@ export default function DashboardLayout({
     const [categories, setCategories] = useState<todocat[]>([]);
     const [newCatName, setNewCatName] = useState("");
     const searchParams = useSearchParams();
-    const activeCategory = searchParams.get("category") || "My Day";
+    const activeCategory = searchParams.get("My Day");
+    const router = useRouter()
 
     const handleAddCategory = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -67,9 +68,36 @@ export default function DashboardLayout({
         }
     }
 
+    const deleteTodoCat = async (id: number) => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                }
+            })
+
+            if (response.ok) {
+                toast.success("Blud deleted the category 🤓")
+                setCategories(prev => prev.filter(category => category.id != id))
+                router.push("/main")
+            } else {
+                toast.error("Blud could not delete the category 🥀")
+            }
+        } catch (error) {
+            toast.error("Blud could not delete the category 🥀")
+        }
+    }
+
     useEffect(() => {
         getTodoCatFromDB()
     }, [])
+
+    const orderedCat = [
+        ...categories.filter(cat => cat.category === "My Day"),
+        ...categories.filter(cat => cat.category !== "My Day"),
+    ]
 
     return (
         <div className="flex h-screen bg-gray-950 text-gray-100 overflow-hidden font-sans">
@@ -89,7 +117,7 @@ export default function DashboardLayout({
                         Collections
                     </p>
 
-                    {categories.map((cat) => (
+                    {orderedCat.map((cat) => (
                         <Link
                             key={cat.id}
                             href={`/main?catId=${cat.id}&title=${cat.category}`}
@@ -98,9 +126,16 @@ export default function DashboardLayout({
                                 : "text-gray-400 hover:bg-gray-800 hover:text-white"
                                 }`}
                         >
-                            {/* Simple Icon Placeholder */}
-                            <span className={`w-2 h-2 rounded-full mr-3 ${activeCategory === cat.category ? "bg-cyan-400" : "bg-gray-600 group-hover:bg-gray-400"}`}></span>
-                            {cat.category}
+                            <div className="flex items-center">
+                                <span className={`w-2 h-2 rounded-full mr-3 ${activeCategory === cat.category ? "bg-cyan-400" : "bg-gray-600 group-hover:bg-gray-400"}`}></span>
+                                {cat.category}
+                            </div>
+
+                            {cat.category !== "My Day" && (
+                                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); deleteTodoCat(cat.id) }} className="ml-auto cursor-pointer group-hover:bg-slate-800 transition">
+                                    🗑️
+                                </button>
+                            )}
                         </Link>
                     ))}
                 </div>
@@ -117,16 +152,16 @@ export default function DashboardLayout({
                         />
                     </form>
                 </div>
-            </aside>
+            </aside >
 
             {/* --- MAIN CONTENT WRAPPER --- */}
-            <div className="flex-1 flex flex-col min-w-0">
+            < div className="flex-1 flex flex-col min-w-0" >
 
                 {/* --- TOP NAVBAR --- */}
-                <header className="h-16 bg-gray-900/50 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+                < header className="h-16 bg-gray-900/50 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4 sm:px-6 lg:px-8" >
 
                     {/* Search Bar */}
-                    <div className="flex-1 max-w-lg">
+                    < div className="flex-1 max-w-lg" >
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -139,10 +174,10 @@ export default function DashboardLayout({
                                 className="block w-full pl-10 pr-3 py-1.5 border border-gray-700 rounded-md leading-5 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:bg-gray-950 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 sm:text-sm transition-colors"
                             />
                         </div>
-                    </div>
+                    </div >
 
                     {/* User Profile */}
-                    <div className="ml-4 flex items-center gap-4">
+                    < div className="ml-4 flex items-center gap-4" >
                         <button className="text-gray-400 hover:text-white transition-colors">
                             <span className="sr-only">Notifications</span>
                             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -152,14 +187,14 @@ export default function DashboardLayout({
                         <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold shadow-lg shadow-cyan-500/20 cursor-pointer">
                             U
                         </div>
-                    </div>
-                </header>
+                    </div >
+                </header >
 
                 {/* --- PAGE CONTENT INJECTION --- */}
-                <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
+                < main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative" >
                     {children}
-                </main>
-            </div>
-        </div>
+                </main >
+            </div >
+        </div >
     );
 }

@@ -96,7 +96,6 @@ export default function DashboardPage() {
     };
 
     // --- UPDATE TODO LOCAL STATE ---
-    // This is called by the Sidebar when it saves changes (Steps/Date)
     const handleUpdateTodoState = (updatedTodo: Todo) => {
         setTodos((prev) => prev.map(t => t.id === updatedTodo.id ? updatedTodo : t));
 
@@ -104,11 +103,32 @@ export default function DashboardPage() {
         setSelectedTodo(updatedTodo);
     };
 
+    const handleRemoveTodo = (id: number) => {
+        setTodos((prev) => prev.filter(t => t.id != id))
+    }
+
     const deleteTodo = async (id: number) => {
-        // Optional: Add DELETE API call here similar to addTodo
-        setTodos(todos.filter(t => t.id !== id));
-        setSelectedTodo(null);
-        toast.success("Task deleted");
+        try {
+            console.log("Entering delete")
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/item?id=${id}&catId=${currentCatId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                }
+            })
+
+            if (response.ok) {
+                toast.success("Task deleted! 🤓");
+                setTodos(todos.filter(t => t.id !== id));
+                setSelectedTodo(null);
+            }
+            else {
+                toast.error("Blud failed to delete todo item 🥀")
+            }
+        } catch (error) {
+            toast.error("Blud failed to delete todo item 🥀")
+        }
     };
 
     const toggleTodo = (e: React.MouseEvent, id: number) => {
@@ -199,7 +219,8 @@ export default function DashboardPage() {
                     todo={selectedTodo}
                     onClose={() => setSelectedTodo(null)}
                     onDelete={deleteTodo}
-                    onUpdate={handleUpdateTodoState} // 👈 Pass the update handler here
+                    onUpdate={handleUpdateTodoState}
+                    onRemove={handleRemoveTodo}
                 />
             )}
         </div>

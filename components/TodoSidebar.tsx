@@ -1,51 +1,66 @@
 "use client";
 
+import { todocat } from "@/types/types";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { Todo } from "@/types/types";
+import { TodoDetailSidebarProps } from "@/types/types";
+import { useSearchParams } from "next/navigation";
 
-// Standard categories (In a real app, pass these as props from the parent)
-const CATEGORY_OPTIONS = ["My Day", "Work", "Groceries", "Gym", "Personal"];
-
-type Todo = {
-    id: number;
-    title: string;
-    steps: string[];
-    completed: boolean;
-    category: string;
-    dueDate: string;
-};
-
-interface TodoDetailSidebarProps {
-    todo: Todo | null;
-    onClose: () => void;
-    onDelete: (id: number) => void;
-    onUpdate: (updatedTodo: Todo) => void;
-}
-
-export default function ToDoSideBar({ todo, onClose, onDelete, onUpdate }: TodoDetailSidebarProps) {
+export default function ToDoSideBar({ todo, onClose, onDelete, onUpdate, onRemove }: TodoDetailSidebarProps) {
+    const searchParams = useSearchParams()
     const [newStep, setNewStep] = useState("");
     const [isUpdating, setIsUpdating] = useState(false);
-
-    // Local state for Title so typing is smooth (we only save on blur)
+    const [categories, setCategories] = useState<todocat[]>([]);
     const [localTitle, setLocalTitle] = useState("");
 
-    // Sync local title when the selected todo changes
+    const currentCatId = searchParams.get("catId");
+
     useEffect(() => {
         if (todo) {
             setLocalTitle(todo.title);
         }
+        getTodoCatFromDB();
     }, [todo]);
 
     if (!todo) return null;
 
-    // --- API Helper ---
+    const getTodoCatFromDB = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json"
+                },
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+
+                setCategories(data)
+            }
+            else {
+                toast.error("Blud could not get categories 🥀")
+            }
+
+        } catch (error) {
+            toast.error("Blud could not get categories 🥀")
+        }
+    }
+
+    const normalizeDueDate = (dueDate?: string | null) => {
+        if (!dueDate) return "";
+        return dueDate.includes("T") ? dueDate : `${dueDate}T00:00:00`;
+    };
+
     const updateTodoInDb = async (updatedFields: Partial<Todo>) => {
         setIsUpdating(true);
         const token = localStorage.getItem("token");
         const mergedTodo = { ...todo, ...updatedFields };
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/todo/update/${todo.id}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/item?id=${todo.id}&catId=${currentCatId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -56,6 +71,9 @@ export default function ToDoSideBar({ todo, onClose, onDelete, onUpdate }: TodoD
 
             if (response.ok) {
                 onUpdate(mergedTodo); // Update parent
+                onRemove(todo.id)
+                onClose()
+
                 toast.success("Saved");
             } else {
                 toast.error("Failed to save");
@@ -79,7 +97,7 @@ export default function ToDoSideBar({ todo, onClose, onDelete, onUpdate }: TodoD
 
     // 2. Category: Save immediately on selection
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        updateTodoInDb({ category: e.target.value });
+        updateTodoInDb({ categoryId: Number(e.target.value) });
     };
 
     const handleAddStep = (e: React.FormEvent) => {
@@ -96,7 +114,7 @@ export default function ToDoSideBar({ todo, onClose, onDelete, onUpdate }: TodoD
     };
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        updateTodoInDb({ dueDate: e.target.value });
+        updateTodoInDb({ dueDate: normalizeDueDate(e.target.value) });
     };
 
     return (
@@ -174,12 +192,13 @@ export default function ToDoSideBar({ todo, onClose, onDelete, onUpdate }: TodoD
                         <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Category</label>
                         <div className="relative">
                             <select
-                                value={todo.category}
+                                onClick={() => getTodoCatFromDB}
+                                value={todo.categoryId}
                                 onChange={handleCategoryChange} // 👈 Saves immediately
                                 className="w-full appearance-none bg-gray-800 border border-gray-700 text-white text-sm rounded-md px-3 py-2 pr-8 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                             >
-                                {CATEGORY_OPTIONS.map((cat) => (
-                                    <option key={cat} value={cat}>{cat}</option>
+                                {categories && categories.map((cat) => (
+                                    <option key={cat.id} value={cat.id}>{cat.category}</option>
                                 ))}
                             </select>
                             {/* Custom Chevron Icon for Select */}
