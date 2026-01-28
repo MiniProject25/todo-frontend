@@ -35,6 +35,7 @@ export default function DashboardPage() {
 
             if (response.ok) {
                 const data = await response.json();
+                console.log(data)
                 setTodos(data);
             } else {
                 setTodos([]);
@@ -105,11 +106,11 @@ export default function DashboardPage() {
 
     const handleRemoveTodo = (id: number) => {
         setTodos((prev) => prev.filter(t => t.id != id))
+        setSelectedTodo(null)
     }
 
     const deleteTodo = async (id: number) => {
         try {
-            console.log("Entering delete")
             const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/item?id=${id}&catId=${currentCatId}`, {
                 method: "DELETE",
                 headers: {
@@ -128,6 +129,7 @@ export default function DashboardPage() {
             }
         } catch (error) {
             toast.error("Blud failed to delete todo item 🥀")
+            console.error(error)
         }
     };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { todocat } from "@/types/types";
+import { todocat, TodoItemUpdate } from "@/types/types";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Todo } from "@/types/types";
@@ -59,6 +59,15 @@ export default function ToDoSideBar({ todo, onClose, onDelete, onUpdate, onRemov
         const token = localStorage.getItem("token");
         const mergedTodo = { ...todo, ...updatedFields };
 
+        const payload: TodoItemUpdate = {
+            categoryId: mergedTodo.category,
+            title: mergedTodo.title,
+            completed: mergedTodo.completed,
+            dueDate: mergedTodo.dueDate,
+            steps: mergedTodo.steps,
+            // category: mergedTodo.category,
+        };
+
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/item?id=${todo.id}&catId=${currentCatId}`, {
                 method: "PUT",
@@ -66,18 +75,17 @@ export default function ToDoSideBar({ todo, onClose, onDelete, onUpdate, onRemov
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`,
                 },
-                body: JSON.stringify(mergedTodo),
+                body: JSON.stringify(payload),
             });
 
             if (response.ok) {
+                // toast.success("Saved");
                 onUpdate(mergedTodo); // Update parent
-                onRemove(todo.id)
-                onClose()
-
-                toast.success("Saved");
+                // onRemove(todo.id)
             } else {
                 toast.error("Failed to save");
             }
+
         } catch (error) {
             console.error("Update error", error);
             toast.error("Error updating task");
@@ -92,12 +100,13 @@ export default function ToDoSideBar({ todo, onClose, onDelete, onUpdate, onRemov
     const handleTitleBlur = () => {
         if (localTitle.trim() !== todo.title) {
             updateTodoInDb({ title: localTitle });
+            onClose()
         }
     };
 
-    // 2. Category: Save immediately on selection
-    const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        updateTodoInDb({ categoryId: Number(e.target.value) });
+    const handleCategoryChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+        await updateTodoInDb({ category: Number(e.target.value) });
+        onRemove(todo.id)
     };
 
     const handleAddStep = (e: React.FormEvent) => {
@@ -193,7 +202,7 @@ export default function ToDoSideBar({ todo, onClose, onDelete, onUpdate, onRemov
                         <div className="relative">
                             <select
                                 onClick={() => getTodoCatFromDB}
-                                value={todo.categoryId}
+                                value={todo.category}
                                 onChange={handleCategoryChange} // 👈 Saves immediately
                                 className="w-full appearance-none bg-gray-800 border border-gray-700 text-white text-sm rounded-md px-3 py-2 pr-8 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
                             >

@@ -15,8 +15,7 @@ export type Todo = {
     completed: boolean;
     steps: string[];
     dueDate: string;
-    category: string;
-    categoryId: number;
+    category: number
 };
 
 export interface TodoDetailSidebarProps {
@@ -25,4 +24,13 @@ export interface TodoDetailSidebarProps {
     onDelete: (id: number) => void;
     onUpdate: (updatedTodo: Todo) => void;
     onRemove: (id: number) => void;
-}
+};
+
+export interface TodoItemUpdate {
+    categoryId: number;
+    title: string;
+    completed: boolean;
+    dueDate: string;
+    steps: string[];
+    // category: string;
+};
