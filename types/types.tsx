@@ -34,3 +34,12 @@ export interface TodoItemUpdate {
     steps: string[];
     // category: string;
 };
+
+export type UserData = {
+    username: string;
+    email: string;
+};
+
+export interface UserProfileProps {
+    onClose: () => void;
+}
