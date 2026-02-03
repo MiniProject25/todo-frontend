@@ -1,9 +1,6 @@
-"use client"
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 import ToastProvider from "./providers/ToastProvider";
 
 const inter = Inter({
