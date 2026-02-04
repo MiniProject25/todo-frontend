@@ -64,7 +64,10 @@ export default function DashboardLayout({
             const token = localStorage.getItem("token");
             const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories?id=${id}`, {
                 method: "DELETE",
-                headers: { "Authorization": `Bearer ${token}` }
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
             });
 
             if (response.ok) {
