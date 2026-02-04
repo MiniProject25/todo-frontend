@@ -74,8 +74,8 @@ export default function DashboardLayout({
                 toast.success("Category deleted gng 🤓");
                 mutate(); // Sync with server
             } else {
-                const message = await response.json();
-                console.error(message.message)
+                // const message = await response.json();
+                // console.error(message.message)
                 toast.error("Blud failed to delete 🥀");
                 mutate(); // Revert if failed
             }
