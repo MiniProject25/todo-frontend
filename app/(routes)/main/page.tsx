@@ -133,25 +133,16 @@ export default function DashboardPage() {
         }
     };
 
-    const toggleTodo = async (e: React.MouseEvent, id: number) => {
+    const toggleTodo = async (e: React.MouseEvent, id: number, status: Boolean) => {
         e.stopPropagation();
 
-        const payload: TodoItemUpdate = {
-            categoryId: null,
-            title: null,
-            completed: true,
-            dueDate: null,
-            steps: null
-        }
-
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/item?id=${id}&catId=${currentCatId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/item/complete?id=${id}&catId=${currentCatId}&status=${status}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`
                 },
-                body: JSON.stringify(payload)
             })
 
             if (response.ok) {
@@ -217,7 +208,7 @@ export default function DashboardPage() {
                     `}
                                     >
                                         <div
-                                            onClick={(e) => toggleTodo(e, todo.id)}
+                                            onClick={(e) => toggleTodo(e, todo.id, todo.completed)}
                                             className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors cursor-pointer z-10 ${todo.completed
                                                 ? "bg-cyan-600 border-cyan-600"
                                                 : "border-gray-600 hover:border-cyan-500"
