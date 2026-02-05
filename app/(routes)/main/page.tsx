@@ -128,15 +128,34 @@ export default function DashboardPage() {
                 toast.error("Blud failed to delete todo item 🥀")
             }
         } catch (error) {
-            toast.error("Blud failed to delete todo item 🥀")
+            toast.error("Blud failed to delete todo item gng 🥀")
             console.error(error)
         }
     };
 
-    const toggleTodo = (e: React.MouseEvent, id: number) => {
+    const toggleTodo = async (e: React.MouseEvent, id: number) => {
         e.stopPropagation();
-        // Optional: Add PUT API call here to toggle completion status in DB
-        setTodos(todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/item?id=${id}&catId=${currentCatId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `${localStorage.getItem("token")}`
+                },
+                body: JSON.stringify({
+                    "completed": true
+                })
+            })
+
+            if (response.ok) {
+                setTodos(todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
+            }
+            else {
+                console.error("Failed!")
+            }
+        } catch (error) {
+            console.error("Failed to update status: ", error)
+        }
     };
 
     return (
