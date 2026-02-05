@@ -27,11 +27,11 @@ export interface TodoDetailSidebarProps {
 };
 
 export interface TodoItemUpdate {
-    categoryId: number;
-    title: string;
-    completed: boolean;
-    dueDate: string;
-    steps: string[];
+    categoryId: number | null;
+    title: string | null;
+    completed: boolean | null;
+    dueDate: string | null;
+    steps: string[] | null;
     // category: string;
 };
 

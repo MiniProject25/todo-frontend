@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import ToDoSideBar from "@/components/TodoSidebar";
-import { Todo } from "@/types/types";
+import { Todo, TodoItemUpdate } from "@/types/types";
 
 export default function DashboardPage() {
     const searchParams = useSearchParams();
@@ -135,6 +135,15 @@ export default function DashboardPage() {
 
     const toggleTodo = async (e: React.MouseEvent, id: number) => {
         e.stopPropagation();
+
+        const payload: TodoItemUpdate = {
+            categoryId: null,
+            title: null,
+            completed: true,
+            dueDate: null,
+            steps: null
+        }
+
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/item?id=${id}&catId=${currentCatId}`, {
                 method: "PUT",
@@ -142,9 +151,7 @@ export default function DashboardPage() {
                     "Content-Type": "application/json",
                     "Authorization": `${localStorage.getItem("token")}`
                 },
-                body: JSON.stringify({
-                    "completed": true
-                })
+                body: JSON.stringify(payload)
             })
 
             if (response.ok) {
