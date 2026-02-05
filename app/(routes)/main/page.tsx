@@ -136,6 +136,13 @@ export default function DashboardPage() {
     const toggleTodo = async (e: React.MouseEvent, id: number, status: Boolean) => {
         e.stopPropagation();
 
+        const prevTodos = todos;
+
+        // optimistic update of the todo status
+        setTodos(todos.map((t) =>
+            t.id == id ? { ...t, completed: !t.completed } : t
+        ));
+
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/item/complete?id=${id}&catId=${currentCatId}&status=${!status}`, {
                 method: "PUT",
