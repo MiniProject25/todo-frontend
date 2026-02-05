@@ -153,7 +153,7 @@ export default function DashboardPage() {
             })
 
             if (response.ok) {
-                setTodos(todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
+                console.log("Completed!")
             }
             else {
                 console.error("Failed!")
