@@ -149,7 +149,7 @@ export default function DashboardPage() {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `${localStorage.getItem("token")}`
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify(payload)
             })
