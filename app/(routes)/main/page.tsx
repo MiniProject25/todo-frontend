@@ -137,7 +137,7 @@ export default function DashboardPage() {
         e.stopPropagation();
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/item/complete?id=${id}&catId=${currentCatId}&status=${status}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/item/complete?id=${id}&catId=${currentCatId}&status=${!status}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
