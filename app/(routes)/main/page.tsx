@@ -159,6 +159,7 @@ export default function DashboardPage() {
                 console.error("Failed!")
             }
         } catch (error) {
+            setTodos(prevTodos)
             console.error("Failed to update status: ", error)
         }
     };
